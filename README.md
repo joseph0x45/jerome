@@ -1,0 +1,2 @@
+# jerome
+A discord bot
