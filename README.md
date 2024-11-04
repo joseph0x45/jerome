@@ -1,2 +1,2 @@
 # jerome
-A discord bot
+A homemade  discord bot
