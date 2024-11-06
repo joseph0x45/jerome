@@ -1,11 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
@@ -196,9 +200,29 @@ func main() {
 		panic(err)
 	}
 	defer session.Close()
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /heath", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	server := http.Server{
+		Addr:    ":" + os.Getenv("PORT"),
+		Handler: mux,
+	}
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("ListenAndServe error: %v", err)
+		}
+	}()
 	log.Println("Bot online")
 	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	log.Println("Press Ctrl+C to exit")
 	<-stop
+	log.Println("Shutting down server")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
+	}
+	log.Println("Server exiting gracefully")
 }
