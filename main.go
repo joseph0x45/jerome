@@ -21,9 +21,7 @@ const rolesMessageID = "1303494297357783092"
 const rolesChannelID = "1302744612049387540"
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		panic(err)
-	}
+	godotenv.Load()
 	token := os.Getenv("DISCORD_BOT_TOKEN")
 	session, err := discordgo.New(fmt.Sprintf("Bot %s", token))
 	if err != nil {
