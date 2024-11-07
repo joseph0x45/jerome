@@ -42,6 +42,10 @@ func main() {
 		partsLen := len(parts)
 		if partsLen >= 2 {
 			cmd := parts[1]
+			if cmd == "say_hi" {
+				s.ChannelMessageSend(m.ChannelID, "Hi every body :)")
+				return
+			}
 			if cmd == "create_role" {
 				member, err := s.GuildMember(m.GuildID, m.Author.ID)
 				if err != nil {
@@ -154,8 +158,6 @@ func main() {
 			}
 		}
 		if roleID == "" {
-			log.Println("Role ", m.Emoji.Name, "not found")
-			s.ChannelMessageSend(m.ChannelID, "Something went wrong")
 			return
 		}
 		err = s.GuildMemberRoleAdd(m.GuildID, m.UserID, roleID)
