@@ -13,7 +13,13 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
+	"golang.org/x/exp/rand"
 )
+
+func rollDice() int {
+	rand.Seed(uint64(time.Now().UnixNano()))
+	return rand.Intn(6) + 1
+}
 
 var defaultRolesColor int = 0x00ff00
 var defaultRolesHoist bool = false
@@ -137,6 +143,11 @@ func main() {
 						log.Println("Error while reacting to message:", err.Error())
 					}
 				}
+				return
+			}
+			//Generate a random int between 1 and 6
+			if cmd == "roll_dice" {
+				s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%d", rollDice()))
 				return
 			}
 		}
